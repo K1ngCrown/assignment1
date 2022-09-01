@@ -4,7 +4,10 @@ using UnityEngine;
 
 public class Spaceship : MonoBehaviour
 {
+    Mesh mesh;
     public Material material;
+
+    public float theta = 10f;
 
     // Start is called before the first frame update
     void Start()
@@ -125,6 +128,28 @@ public class Spaceship : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        Vector3[] vertices = mesh.vertices;
+
+        Matrix3x3 M = Rotate(theta * Time.deltaTime);
+
+        // Apply the rotation to all the points in the mesh
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = M.MultiplyPoint(vertices[i]);
+        }
+        mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
+    }
+
+    Matrix3x3 Rotate(float angle)
+    {
+        Matrix3x3 matrix = new Matrix3x3();
+
+        matrix.SetRow(0, new Vector3(Mathf.Cos(angle), -Mathf.Sin(angle), 0));
+        matrix.SetRow(1, new Vector3(Mathf.Sin(angle), Mathf.Cos(angle), 0));
+        matrix.SetRow(2, new Vector3(0.0f, 0.0f, 1.0f));
+
+        return matrix;
     }
 }
