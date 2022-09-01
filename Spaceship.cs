@@ -3,11 +3,15 @@ using System.Collections;
 
 public class Spaceship : MonoBehaviour
 {
-    // Get the Mesh from the MeshFilter
+    /// <summary>
+    /// This class is used to detail the spaceship game object
+    /// </summary>
+
     Mesh mesh;
 
     public Material material;
     public float theta = 2f;
+
 
     // Start is called before the first frame update
     void Start()
@@ -15,6 +19,9 @@ public class Spaceship : MonoBehaviour
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
+
+      
+
 
         // CLear all vertex and index data from the mesh
         mesh.Clear();
@@ -49,39 +56,20 @@ public class Spaceship : MonoBehaviour
             new Vector3(0.0f, -1.4f) // 24
         };
 
-        // Set the colour of the triangle
-        mesh.colors = new Color[]
+        // This section sets the colour of the spaceships vertices
+        Vector3[] vertices = mesh.vertices;
+        Color[] colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
-            // all orange at this point
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f), 
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),                      
-            new Color(0.8f, 0.3f, 0.3f, 1.0f), 
-            new Color(0.8f, 0.3f, 0.3f, 1.0f), 
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),            
-            new Color(0.8f, 0.3f, 0.3f, 1.0f), 
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),            
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),            
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),             
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),            
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f)
-        };
+            // vertices will be orange
+            colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
+        }
+        mesh.colors = colors;
+        
 
         // Set vertex indices
-        mesh.triangles = new int[] 
-        { 
+        mesh.triangles = new int[]
+        {
             0, 1, 2, // A
             1, 2, 7, // B            
             2, 7, 12, // C            
@@ -97,17 +85,18 @@ public class Spaceship : MonoBehaviour
             20, 21, 22, // M             
             19, 22, 23 // N
         };
-        
+
     }
+
+
 
     // Update is called once per frame
     void Update()
     {
-        // Get all the points from the mesh
         Vector3[] vertices = mesh.vertices;
 
         // Create the rotation matrix
-        Matrix3x3 M = Rotate(theta * Time.deltaTime);
+        Matrix3x3 M = IGB283Transform.Rotate(theta * Time.deltaTime);
 
         // Apply the rotation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
@@ -121,5 +110,5 @@ public class Spaceship : MonoBehaviour
         mesh.RecalculateBounds();
     }
 
-    Matrix3x3 rotate = IGB283Transform.Rotate(theta);
+    
 }
