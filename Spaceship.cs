@@ -3,20 +3,18 @@ using System.Collections;
 
 public class Spaceship : MonoBehaviour
 {
+    // Get the Mesh from the MeshFilter
+    Mesh mesh;
+
     public Material material;
+    public float theta = 2f;
 
     // Start is called before the first frame update
     void Start()
     {
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
-
-        // Get the Mesh from the MeshFilter
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-
-        // Set the material to the material we have selected
-        GetComponent<MeshRenderer>().material = material;
+        mesh = gameObject.AddComponent<MeshFilter>().mesh;
+        gameObject.AddComponent<MeshRenderer>().material = material;
 
         // CLear all vertex and index data from the mesh
         mesh.Clear();
@@ -105,6 +103,23 @@ public class Spaceship : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // Get all the points from the mesh
+        Vector3[] vertices = mesh.vertices;
+
+        // Create the rotation matrix
+        Matrix3x3 M = Rotate(theta * Time.deltaTime);
+
+        // Apply the rotation to all the points in the mesh
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = M.MultiplyPoint(vertices[i]);
+        }
+
+        // Write the points back to the mesh
+        mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
     }
+
+    Matrix3x3 rotate = IGB283Transform.Rotate(theta);
 }
