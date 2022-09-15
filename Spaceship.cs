@@ -1,155 +1,163 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using System.Collections;
 
 public class Spaceship : MonoBehaviour
 {
-    Mesh mesh;
-    public Material material;
+    /// <summary>
+    /// This class is used to detail the spaceship game object
+    /// </summary>
 
-    public float theta = 10f;
+    Mesh mesh;
+
+    public Material material;
+    public float theta = 2f;
+
+    private float minSize = 0.006f;
+    private float maxSize = 1.500f;
+    public float size;
+    public float speed = 1.7f;
+
+    private bool bigger = true;
+    private bool smaller = false;
+
 
     // Start is called before the first frame update
     void Start()
     {
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
+        // Add a MeshFilter and MeshRenderer to the Empty GameObject
+        mesh = gameObject.AddComponent<MeshFilter>().mesh;
+        gameObject.AddComponent<MeshRenderer>().material = material;
 
-        // Get the Mesh from the MeshFilter
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
+      
 
-        // Set the material to the material we have selected
-        GetComponent<MeshRenderer>().material = material;
 
-        // Clear all vertex and index data from the mesh
+        // CLear all vertex and index data from the mesh
         mesh.Clear();
 
-
+        // Create a triangles with points
         mesh.vertices = new Vector3[]
         {
-            // A
-            new Vector3(-0.4f, 0.6f),
-            new Vector3(0.4f, 0.6f),
-            new Vector3(0f, 1.2f),
-
-            // B
-            new Vector3(-0.4f, 0.6f),
-            new Vector3(0.4f, 0.6f),
-            new Vector3(-0.4f, -0.6f),
-
-            // C
-            new Vector3(0.4f, 0.6f),
-            new Vector3(-0.4f, -0.6f),
-            new Vector3(0.4f, -0.6f),
-
-            // D
-            new Vector3(-0.6f, -0.3f),
-            new Vector3(-0.4f, -0.2f),
-            new Vector3(-0.4f, -0.3f),
-
-            // E
-            new Vector3(-0.6f, -0.3f),
-            new Vector3(-0.4f, -0.3f),
-            new Vector3(-0.7f, -0.65f),
-
-            // F
-            new Vector3(0.4f, -0.2f),
-            new Vector3(0.6f, -0.3f),
-            new Vector3(0.4f, -0.3f),
-
-            // G
-            new Vector3(0.6f, -0.3f),
-            new Vector3(0.4f, -0.3f),
-            new Vector3(0.7f, -0.65f),
-
-            // H
-            new Vector3(-0.2f, -0.6f),
-            new Vector3(-0.3f, -0.7f),
-            new Vector3(0.2f, -0.6f),
-
-            // I
-            new Vector3(-0.3f, -0.7f),
-            new Vector3(0.2f, -0.6f),
-            new Vector3(0.3f, -0.7f),
-
-            // J
-            new Vector3(-0.2f, -0.7f),
-            new Vector3(-0.3f, -1.0f),
-            new Vector3(-0.2f, -0.9f),
-
-            // K
-            new Vector3(-0.2f, -0.7f),
-            new Vector3(-0.2f, -0.9f),
-            new Vector3(0.2f, -0.7f),
-
-            // L
-            new Vector3(-0.2f, -0.9f),
-            new Vector3(0.2f, -0.7f),
-            new Vector3(0.2f, -0.9f),
-
-            // M
-            new Vector3(0.2f, -0.7f),
-            new Vector3(0.3f, -1.0f),
-            new Vector3(0.2f, -0.9f),
-
-            // N
-            new Vector3(-0.2f, -0.9f),
-            new Vector3(0.2f, -0.9f),
-            new Vector3(0.0f, -1.4f)
+            // Point no. (google sheet)
+            new Vector3(0f, 1.2f), // 1
+            new Vector3(-0.4f, 0.6f), // 2
+            new Vector3(0.4f, 0.6f), // 3
+            new Vector3(-0.4f, -0.2f), // 4
+            new Vector3(-0.6f, -0.3f), // 5
+            new Vector3(-0.4f, -0.3f), // 6
+            new Vector3(-0.7f, -0.65f), // 7
+            new Vector3(-0.4f, -0.6f), // 8
+            new Vector3(0.4f, -0.2f), // 9
+            new Vector3(0.6f, -0.3f), // 10
+            new Vector3(0.4f, -0.3f), // 11
+            new Vector3(0.7f, -0.65f), // 12
+            new Vector3(0.4f, -0.6f), // 13
+            new Vector3(-0.2f, -0.6f), // 14
+            new Vector3(-0.3f, -0.7f), // 15
+            new Vector3(0.2f, -0.6f), // 16
+            new Vector3(0.3f, -0.7f), // 17
+            new Vector3(-0.2f, -0.7f), // 18
+            new Vector3(-0.3f, -1.0f), // 19
+            new Vector3(-0.2f, -0.9f), // 20
+            new Vector3(0.2f, -0.7f), // 21
+            new Vector3(0.3f, -1.0f), // 22
+            new Vector3(0.2f, -0.9f), // 23            
+            new Vector3(0.0f, -1.4f) // 24
         };
-        // Set the colour of the triangle
-        mesh.colors = new Color[]
+
+        // This section sets the colour of the spaceships vertices
+        Vector3[] vertices = mesh.vertices;
+        Color[] colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
         {
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f),
-            new Color(0.8f, 0.3f, 0.3f, 1.0f)
-        };
+            // vertices will be orange
+            colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
+        }
+        mesh.colors = colors;
+        
 
         // Set vertex indices
         mesh.triangles = new int[]
         {
-            0, 1, 2,
-            3, 4, 5,
-            6, 7, 8,
-            9, 10, 11,
-            12, 13, 14,
-            15, 16, 17,
-            18, 19, 20,
-            21, 22, 23,
-            24, 25, 26,
-            27, 28, 29,
-            30, 31, 32,
-            33, 34, 35,
-            36, 37, 38,
-            39, 40, 41
+            0, 1, 2, // A
+            1, 2, 7, // B            
+            2, 7, 12, // C            
+            4, 3, 5, // D            
+            4, 5, 6, // E            
+            8, 9, 10, // F            
+            9, 10, 11, // G            
+            13, 14, 15, // H
+            14, 15, 16, // I            
+            17, 18, 19, // J            
+            17, 19, 20, // K            
+            19, 20, 22, // L            
+            20, 21, 22, // M             
+            19, 22, 23 // N
         };
+
     }
+
+
 
     // Update is called once per frame
     void Update()
     {
         Vector3[] vertices = mesh.vertices;
+        /*
 
-        Matrix3x3 M = Rotate(theta * Time.deltaTime);
+        if (size == maxSize)
+        {
+            size = size - speed;
 
+        }
+        else if(size == minSize)
+        {
+            size = size + speed;
+        }
+
+        
+
+       if(size != maxSize && size < minSize)
+       {
+           size = size - speed;
+       }
+       else if(size !=minSize && size< minSize)
+       {
+           size = size - speed;
+       }
+
+       if (bigger == true && smaller == false)
+       {
+           size = size + speed;
+       } 
+       else if(smaller == true && bigger == false)
+       {
+           size = size - speed;
+       }
+       */
+         //size += Time.deltaTime * speed;
+
+
+        // Create the rotation matrix
+        //Matrix3x3 T = IGB283Transform.Translate(theta);
+        Matrix3x3 R = IGB283Transform.Rotate(theta * Time.deltaTime);
+        Matrix3x3 S = IGB283Transform.Scale(size, size);
+
+       // Matrix3x3 M = R * S;
+
+
+        
         // Apply the rotation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i] = M.MultiplyPoint(vertices[i]);
+            vertices[i] = S.MultiplyPoint(vertices[i]);
         }
+
+        // Write the points back to the mesh
         mesh.vertices = vertices;
 
         mesh.RecalculateBounds();
     }
 
-    Matrix3x3 Rotate(float angle)
-    {
-        Matrix3x3 matrix = new Matrix3x3();
-
-        matrix.SetRow(0, new Vector3(Mathf.Cos(angle), -Mathf.Sin(angle), 0));
-        matrix.SetRow(1, new Vector3(Mathf.Sin(angle), Mathf.Cos(angle), 0));
-        matrix.SetRow(2, new Vector3(0.0f, 0.0f, 1.0f));
-
-        return matrix;
-    }
+    
 }
+
