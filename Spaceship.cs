@@ -10,17 +10,19 @@ public class Spaceship : MonoBehaviour
     Mesh mesh;
 
     public Material material;
-    public float theta = 2f;
+    public float theta = 5f;
 
+    private float right_planet_x = 8f;
+    private float left_planet_x = -8f;
+
+    private Vector3 offset;
 
     // Start is called before the first frame update
     void Start()
     {
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
-        gameObject.AddComponent<MeshRenderer>().material = material;
-
-      
+        gameObject.AddComponent<MeshRenderer>().material = material;  
 
 
         // CLear all vertex and index data from the mesh
@@ -65,8 +67,7 @@ public class Spaceship : MonoBehaviour
             colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
         }
         mesh.colors = colors;
-        
-
+    
         // Set vertex indices
         mesh.triangles = new int[]
         {
@@ -86,29 +87,60 @@ public class Spaceship : MonoBehaviour
             19, 22, 23 // N
         };
 
+        // Calculate the bounds of the shape
+        offset.x = mesh.bounds.size.x / 2;
+        offset.y = mesh.bounds.size.y / 2;
     }
-
-
 
     // Update is called once per frame
     void Update()
     {
         Vector3[] vertices = mesh.vertices;
 
-        // Create the rotation matrix
-        Matrix3x3 M = IGB283Transform.Rotate(theta * Time.deltaTime);
+        // Create rotate matrix
+        // CHANGE ROTATE SPEED HERE
+        Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
 
-        // Apply the rotation to all the points in the mesh
-        for (int i = 0; i < vertices.Length; i++)
+        // Create the translate matrix        
+        
+        if (offset.x >= left_planet_x && offset.x != right_planet_x)
         {
-            vertices[i] = M.MultiplyPoint(vertices[i]);
-        }
+            Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(0.005f, 0, 0));
+            Matrix3x3 Translate_Back = IGB283Transform.Translate(-offset);
+            Matrix3x3 Transformation = Translate * RotateShip * Translate_Back;
 
-        // Write the points back to the mesh
-        mesh.vertices = vertices;
+            // Apply the transformation to all the points in the mesh
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = Transformation.MultiplyPoint(vertices[i]);
+            }
 
-        mesh.RecalculateBounds();
+            // Write the points back to the mesh
+            mesh.vertices = vertices;
+
+            mesh.RecalculateBounds();
+            offset = mesh.bounds.center;
+
+        } else if (offset.x <= right_planet_x && offset.x != left_planet_x) 
+        {
+            // GO LEFT
+            Matrix3x3 Translate = IGB283Transform.Translate(offset - new Vector3(0.005f, 0, 0));
+            Matrix3x3 Translate_Back = IGB283Transform.Translate(-offset);
+            Matrix3x3 Transformation = Translate * RotateShip * Translate_Back;
+
+            // Apply the transformation to all the points in the mesh
+            for (int i = 0; i < vertices.Length; i++)
+            {
+                vertices[i] = Transformation.MultiplyPoint(vertices[i]);
+            }
+
+            // Write the points back to the mesh
+            mesh.vertices = vertices;
+
+            mesh.RecalculateBounds();
+            offset = mesh.bounds.center;
+        };
+          
     }
-
     
 }
