@@ -21,8 +21,9 @@ public class Spaceship : MonoBehaviour
 
     public float increaseSize = 1.0001f;
     public float decreaseSize = 0.9999f;
-    public float time = 10;
+    public float time = 10f;
     public float currentTime;
+    public bool change;
 
     // Start is called before the first frame update
     void Start()
@@ -31,13 +32,12 @@ public class Spaceship : MonoBehaviour
         //Timer from 10 seconds
         currentTime = time;
         size = increaseSize;
+        change = false;
 
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
 
-
-        
 
         // CLear all vertex and index data from the mesh
         mesh.Clear();
@@ -111,16 +111,34 @@ public class Spaceship : MonoBehaviour
     {
         
         Vector3[] vertices = mesh.vertices;
-        
+
+        //Timer countdown from 10
         currentTime -= 1 * Time.deltaTime;
-        if(currentTime <= 0)
+        Debug.Log(currentTime);
+        
+
+        if (currentTime < 0f && change == false )
         {
-            size = decreaseSize;     
+            currentTime = 10f;
+            change = true;
         }
-        else if(currentTime <= -10 && currentTime > 0)
+        else if (currentTime < 0f && change == true)
         {
-            size = increaseSize;          
+            currentTime = 10f;
+            change= false;
         }
+        
+        if(change == true)
+        {
+            size = decreaseSize;
+        }
+        else if(change == false)
+        {
+            size = increaseSize;
+        }
+
+      
+        Debug.Log(change);
         // Create the rotation matrix
         //Matrix3x3 T = IGB283Transform.Translate(theta);
         Matrix3x3 R = IGB283Transform.Rotate(theta * Time.deltaTime);
@@ -129,7 +147,7 @@ public class Spaceship : MonoBehaviour
         // Matrix3x3 M = R * S;
 
 
-        Debug.Log(currentTime);
+        
         // Apply the rotation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
