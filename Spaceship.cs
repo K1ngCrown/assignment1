@@ -11,16 +11,27 @@ public class Spaceship : MonoBehaviour
 
     public Material material;
     public float theta = 5f;
-    public float speed = 0.01f;
+    public float speed = 1f;
     
     private float right_planet_x = 7f;
     private float left_planet_x = -7f;
 
     private Vector3 offset;
 
+    public float size;
+    public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+    public float increaseSize = 1.0001f;
+    public float decreaseSize = 0.9999f;
+    public float time = 10;
+    public float currentTime;
+
     // Start is called before the first frame update
     void Start()
     {
+        //Timer from 10 seconds
+        currentTime = time;
+        size = increaseSize;
+
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;  
@@ -96,29 +107,44 @@ public class Spaceship : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // Finding position of the planets for translating between them
-        // Vector3 Left_Planet_Position = GameObject.Find("LeftPlanet").transform.position;
-        // Vector3 Right_Planet_Position = GameObject.Find("RightPlanet").transform.position;
         Vector3[] vertices = mesh.vertices;
-
-        // Create rotate matrix
-        // CHANGE ROTATE SPEED HERE
-        Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
-
-        if (offset.x > right_planet_x || offset.x < left_planet_x) {
-            speed *= -1;
+        
+        currentTime -= 1 * Time.deltaTime;
+        if(currentTime <= 0)
+        {
+            size = decreaseSize;     
+        }
+        else if(currentTime <= -10 && currentTime > 0)
+        {
+            size = increaseSize;          
         }
 
-        // Create the translate matrix        
+        // Create rotation matrix
+        Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
+        // Create the translate matrix 
+        if (offset.x > right_planet_x || offset.x < left_planet_x) {
+            speed *= -1;
+        }               
         
-        Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed, 0, 0));
+        Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed / 100, 0, 0));
+        Matrix3x3 Scale = IGB283Transform.Scale(size, size);
         Matrix3x3 Translate_Back = IGB283Transform.Translate(-offset);
-        Matrix3x3 Transformation = Translate * RotateShip * Translate_Back;
+        Matrix3x3 Transformation = Translate * Scale * RotateShip * Translate_Back;
 
         // Apply the transformation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i] = Transformation.MultiplyPoint(vertices[i]);
+        }
+
+        
+
+        Debug.Log(currentTime);
+        // Apply the rotation to all the points in the mesh
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = Scale.MultiplyPoint(vertices[i]);
+            
         }
 
         // Write the points back to the mesh
