@@ -12,24 +12,32 @@ public class Spaceship : MonoBehaviour
     public Material material;
     public float theta = 2f;
 
-    private float minSize = 0.006f;
-    private float maxSize = 1.500f;
+   
     public float size;
     public float speed = 1.7f;
 
-    private bool bigger = true;
-    private bool smaller = false;
 
+    public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+
+    public float increaseSize = 1.0001f;
+    public float decreaseSize = 0.9999f;
+    public float time = 10;
+    public float currentTime;
 
     // Start is called before the first frame update
     void Start()
     {
+
+        //Timer from 10 seconds
+        currentTime = time;
+        size = increaseSize;
+
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
 
-      
 
+        
 
         // CLear all vertex and index data from the mesh
         mesh.Clear();
@@ -63,7 +71,7 @@ public class Spaceship : MonoBehaviour
             new Vector3(0.2f, -0.9f), // 23            
             new Vector3(0.0f, -1.4f) // 24
         };
-
+        
         // This section sets the colour of the spaceships vertices
         Vector3[] vertices = mesh.vertices;
         Color[] colors = new Color[vertices.Length];
@@ -73,7 +81,7 @@ public class Spaceship : MonoBehaviour
             colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
         }
         mesh.colors = colors;
-        
+
 
         // Set vertex indices
         mesh.triangles = new int[]
@@ -101,55 +109,32 @@ public class Spaceship : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Vector3[] vertices = mesh.vertices;
-        /*
-
-        if (size == maxSize)
-        {
-            size = size - speed;
-
-        }
-        else if(size == minSize)
-        {
-            size = size + speed;
-        }
-
         
-
-       if(size != maxSize && size < minSize)
-       {
-           size = size - speed;
-       }
-       else if(size !=minSize && size< minSize)
-       {
-           size = size - speed;
-       }
-
-       if (bigger == true && smaller == false)
-       {
-           size = size + speed;
-       } 
-       else if(smaller == true && bigger == false)
-       {
-           size = size - speed;
-       }
-       */
-         //size += Time.deltaTime * speed;
-
-
+        Vector3[] vertices = mesh.vertices;
+        
+        currentTime -= 1 * Time.deltaTime;
+        if(currentTime <= 0)
+        {
+            size = decreaseSize;     
+        }
+        else if(currentTime <= -10 && currentTime > 0)
+        {
+            size = increaseSize;          
+        }
         // Create the rotation matrix
         //Matrix3x3 T = IGB283Transform.Translate(theta);
         Matrix3x3 R = IGB283Transform.Rotate(theta * Time.deltaTime);
-        Matrix3x3 S = IGB283Transform.Scale(size, size);
+        Matrix3x3 S = IGB283Transform.Scale(size,size) ;
 
-       // Matrix3x3 M = R * S;
+        // Matrix3x3 M = R * S;
 
 
-        
+        Debug.Log(currentTime);
         // Apply the rotation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
             vertices[i] = S.MultiplyPoint(vertices[i]);
+            
         }
 
         // Write the points back to the mesh
@@ -158,6 +143,5 @@ public class Spaceship : MonoBehaviour
         mesh.RecalculateBounds();
     }
 
-    
-}
 
+}
