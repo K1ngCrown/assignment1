@@ -10,17 +10,33 @@ public class Spaceship : MonoBehaviour
     Mesh mesh;
 
     public Material material;
-    public float theta = 2f;
+    public float theta = 5f;
+    public float speed = 1f;
 
+    private float right_planet_x = 7f;
+    private float left_planet_x = -7f;
+
+    private Vector3 offset;
+
+    public float size;
+    public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
+    public float increaseSize = 1.0001f;
+    public float decreaseSize = 0.9999f;
+    public float time = 10f;
+    public float currentTime;
+    public bool change;
 
     // Start is called before the first frame update
     void Start()
     {
+        //Timer from 10 seconds
+        currentTime = time;
+        size = increaseSize;
+        change = false;
+
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
-
-      
 
 
         // CLear all vertex and index data from the mesh
@@ -65,7 +81,6 @@ public class Spaceship : MonoBehaviour
             colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
         }
         mesh.colors = colors;
-        
 
         // Set vertex indices
         mesh.triangles = new int[]
@@ -86,29 +101,72 @@ public class Spaceship : MonoBehaviour
             19, 22, 23 // N
         };
 
+        // Calculate the bounds of the shape
+        offset.x = mesh.bounds.size.x / 2;
+        offset.y = mesh.bounds.size.y / 2;
     }
-
-
 
     // Update is called once per frame
     void Update()
     {
         Vector3[] vertices = mesh.vertices;
 
-        // Create the rotation matrix
-        Matrix3x3 M = IGB283Transform.Rotate(theta * Time.deltaTime);
+        currentTime -= 1 * Time.deltaTime;
+        if (currentTime < 0f && change == false)
+        {
+            currentTime = 10f;
+            change = true;
+        }
+        else if (currentTime < 0f && change == true)
+        {
+            currentTime = 10f;
+            change = false;
+        }
 
+        if (change == true)
+        {
+            size = decreaseSize;
+        }
+        else if (change == false)
+        {
+            size = increaseSize;
+        }
+
+        // Create rotation matrix
+        Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
+        // Create the translate matrix 
+        if (offset.x > right_planet_x || offset.x < left_planet_x)
+        {
+            speed *= -1;
+        }
+
+        Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed / 100, 0, 0));
+        Matrix3x3 Scale = IGB283Transform.Scale(size, size);
+        Matrix3x3 Translate_Back = IGB283Transform.Translate(-offset);
+        Matrix3x3 Transformation = Translate * RotateShip * Scale * Translate_Back;
+
+        // Apply the transformation to all the points in the mesh
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = Transformation.MultiplyPoint(vertices[i]);
+        }
+
+
+
+        Debug.Log(currentTime);
         // Apply the rotation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i] = M.MultiplyPoint(vertices[i]);
+            vertices[i] = Scale.MultiplyPoint(vertices[i]);
+
         }
 
         // Write the points back to the mesh
         mesh.vertices = vertices;
 
         mesh.RecalculateBounds();
+        offset = mesh.bounds.center;
+
     }
 
-    
 }
