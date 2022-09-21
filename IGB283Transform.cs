@@ -7,11 +7,7 @@ public class IGB283Transform
     // This class is used to detail the data for the shape tranformations
 
 
-    public static Matrix3x3 Scale()
-    {
-        Matrix3x3 matrix = new Matrix3x3();
-        return matrix;
-    }
+    
 
     public static Matrix3x3 Translate(Vector3 d)
     {
