@@ -10,30 +10,22 @@ public class Spaceship : MonoBehaviour
     Mesh mesh;
 
     public Material material;
-    public float theta = 2f;
+    public float theta = 1f;
+    public float speed = 1f;
 
-   
+    private float right_planet_x = 8f;
+    private float left_planet_x = -8f;
+
+    private Vector3 offset;
+
     public float size;
-    public float speed = 1.7f;
-
-
-    public Vector3 scale = new Vector3(1.0f, 1.0f, 1.0f);
-
-    public float increaseSize = 1.0001f;
-    public float decreaseSize = 0.9999f;
-    public float time = 10f;
-    public float currentTime;
-    public bool change;
+    public float increaseSize = 1.0003f;
+    public float decreaseSize = 0.9997f;
 
     // Start is called before the first frame update
     void Start()
-    {
-
-        //Timer from 10 seconds
-        currentTime = time;
+    {    
         size = increaseSize;
-        change = false;
-
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
@@ -71,17 +63,10 @@ public class Spaceship : MonoBehaviour
             new Vector3(0.2f, -0.9f), // 23            
             new Vector3(0.0f, -1.4f) // 24
         };
-        
+
         // This section sets the colour of the spaceships vertices
         Vector3[] vertices = mesh.vertices;
-        Color[] colors = new Color[vertices.Length];
-        for (int i = 0; i < vertices.Length; i++)
-        {
-            // vertices will be orange
-            colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
-        }
-        mesh.colors = colors;
-
+        
 
         // Set vertex indices
         mesh.triangles = new int[]
@@ -102,64 +87,81 @@ public class Spaceship : MonoBehaviour
             19, 22, 23 // N
         };
 
+        // Calculate the bounds of the shape
+        offset.x = mesh.bounds.size.x / 2;
+        offset.y = mesh.bounds.size.y / 2;
     }
-
-
 
     // Update is called once per frame
     void Update()
     {
-        
         Vector3[] vertices = mesh.vertices;
+        Color[] colors = new Color[vertices.Length];
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            // vertices will be orange
+            if (offset.x > 0)
+            {
+                colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
+                
+            }
+            else
+            {
+                colors[i] = new Color(0, 0, 1, 1);
+                
+            }
 
-        //Timer countdown from 10
-        currentTime -= 1 * Time.deltaTime;
-        Debug.Log(currentTime);
-        
+        }
+        mesh.colors = colors;
 
-        if (currentTime < 0f && change == false )
+      
+       
+
+       
+        if (offset.x > right_planet_x || offset.x < left_planet_x)
         {
-            currentTime = 10f;
-            change = true;
+            speed *= -1;
         }
-        else if (currentTime < 0f && change == true)
-        {
-            currentTime = 10f;
-            change= false;
-        }
-        
-        if(change == true)
-        {
-            size = decreaseSize;
-        }
-        else if(change == false)
+        if (speed == 1)
         {
             size = increaseSize;
         }
+        else if (speed == -1)
+        {
+            size = decreaseSize;
+        }
+       
+        Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
+        Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed / 150, 0, 0));
+        Matrix3x3 Scale = IGB283Transform.Scale(size, size);
+        Matrix3x3 Translate_Back = IGB283Transform.Translate(-offset);
+        Matrix3x3 Transformation = Translate * RotateShip * Scale * Translate_Back;
 
-      
-        Debug.Log(change);
-        // Create the rotation matrix
-        //Matrix3x3 T = IGB283Transform.Translate(theta);
-        Matrix3x3 R = IGB283Transform.Rotate(theta * Time.deltaTime);
-        Matrix3x3 S = IGB283Transform.Scale(size,size) ;
-
-        // Matrix3x3 M = R * S;
-
-
-        
-        // Apply the rotation to all the points in the mesh
+        // Apply the transformation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
-            vertices[i] = S.MultiplyPoint(vertices[i]);
-            
+            vertices[i] = Transformation.MultiplyPoint(vertices[i]);
         }
 
         // Write the points back to the mesh
         mesh.vertices = vertices;
 
         mesh.RecalculateBounds();
-    }
+        offset = mesh.bounds.center;
 
+        //Change the speed of shape rotation
+        if ((Input.GetKeyDown("k")) && theta < 7.0f)
+        {
+            theta += 0.1f;    
+        }
+        else if ((Input.GetKeyDown("l")) && theta > 0f)
+        {
+            theta -= 0.1f;
+            if(theta < 0.1f)
+            {
+                theta = 0f;
+            }
+        }
+    }
 
 }
