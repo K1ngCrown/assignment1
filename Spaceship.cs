@@ -13,8 +13,8 @@ public class Spaceship : MonoBehaviour
     public float theta = 1f;
     public float speed = 1f;
 
-    private float right_planet_x = 8f;
-    private float left_planet_x = -8f;
+    private float right_planet_x = 7f;
+    private float left_planet_x = -7f;
 
     private Vector3 offset;
 
