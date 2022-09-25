@@ -38,30 +38,30 @@ public class Spaceship : MonoBehaviour
         mesh.vertices = new Vector3[]
         {
             // Point no. (google sheet)
-            new Vector3(0f, 1.2f), // 1
-            new Vector3(-0.4f, 0.6f), // 2
-            new Vector3(0.4f, 0.6f), // 3
-            new Vector3(-0.4f, -0.2f), // 4
-            new Vector3(-0.6f, -0.3f), // 5
-            new Vector3(-0.4f, -0.3f), // 6
-            new Vector3(-0.7f, -0.65f), // 7
-            new Vector3(-0.4f, -0.6f), // 8
-            new Vector3(0.4f, -0.2f), // 9
-            new Vector3(0.6f, -0.3f), // 10
-            new Vector3(0.4f, -0.3f), // 11
-            new Vector3(0.7f, -0.65f), // 12
-            new Vector3(0.4f, -0.6f), // 13
-            new Vector3(-0.2f, -0.6f), // 14
-            new Vector3(-0.3f, -0.7f), // 15
-            new Vector3(0.2f, -0.6f), // 16
-            new Vector3(0.3f, -0.7f), // 17
-            new Vector3(-0.2f, -0.7f), // 18
-            new Vector3(-0.3f, -1.0f), // 19
-            new Vector3(-0.2f, -0.9f), // 20
-            new Vector3(0.2f, -0.7f), // 21
-            new Vector3(0.3f, -1.0f), // 22
-            new Vector3(0.2f, -0.9f), // 23            
-            new Vector3(0.0f, -1.4f) // 24
+            new Vector3(0f, 0.95f), // 1
+            new Vector3(-0.35f, 0.5f), // 2
+            new Vector3(0.35f, 0.5f), // 3
+            new Vector3(-0.35f, 0.0f), // 4
+            new Vector3(-0.55f, -0.1f), // 5
+            new Vector3(-0.35f, -0.1f), // 6
+            new Vector3(-0.65f, -0.4f), // 7
+            new Vector3(-0.35f, -0.3f), // 8
+            new Vector3(0.35f, 0.0f), // 9
+            new Vector3(0.55f, -0.1f), // 10
+            new Vector3(0.35f, -0.1f), // 11
+            new Vector3(0.65f, -0.4f), // 12
+            new Vector3(0.35f, -0.3f), // 13
+            new Vector3(-0.2f, -0.3f), // 14
+            new Vector3(-0.25f, -0.4f), // 15
+            new Vector3(0.2f, -0.3f), // 16
+            new Vector3(0.25f, -0.4f), // 17
+            new Vector3(-0.2f, -0.4f), // 18
+            new Vector3(-0.3f, -0.7f), // 19
+            new Vector3(-0.2f, -0.6f), // 20
+            new Vector3(0.2f, -0.4f), // 21
+            new Vector3(0.3f, -0.7f), // 22
+            new Vector3(0.2f, -0.6f), // 23            
+            new Vector3(0.0f, -0.95f) // 24
         };
 
         // This section sets the colour of the spaceships vertices
