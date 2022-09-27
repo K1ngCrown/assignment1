@@ -11,10 +11,15 @@ public class SecondSpaceShip : MonoBehaviour
 
     public Material material;
     public float theta = 1f;
-    public float speed = 0f;
+    public float speed = 1f;
 
-    private float right_planet_x = 7f;
+    private float shift_up = 3f;
+    public bool goUp;
+
+    private float right_planet_x = 7;
     private float left_planet_x = -7f;
+
+    
 
     private Vector3 offset;
 
@@ -25,6 +30,7 @@ public class SecondSpaceShip : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        goUp = true;
         //size = increaseSize;
         // Add a MeshFilter and MeshRenderer to the Empty GameObject
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
@@ -37,6 +43,7 @@ public class SecondSpaceShip : MonoBehaviour
         // Create a triangles with points
         mesh.vertices = new Vector3[]
         {
+            
             // Point no. (google sheet)
             new Vector3(0f, 0.95f), // 1
             new Vector3(-0.35f, 0.5f), // 2
@@ -62,6 +69,8 @@ public class SecondSpaceShip : MonoBehaviour
             new Vector3(0.3f, -0.7f), // 22
             new Vector3(0.2f, -0.6f), // 23            
             new Vector3(0.0f, -0.95f) // 24
+            
+
         };
 
         // This section sets the colour of the spaceships vertices
@@ -90,6 +99,9 @@ public class SecondSpaceShip : MonoBehaviour
         // Calculate the bounds of the shape
         offset.x = mesh.bounds.size.x / 2;
         offset.y = mesh.bounds.size.y / 2;
+
+       
+        
     }
 
     // Update is called once per frame
@@ -100,7 +112,7 @@ public class SecondSpaceShip : MonoBehaviour
         for (int i = 0; i < vertices.Length; i++)
         {
             // vertices will be orange
-            if (offset.x > 0)
+            if (offset.y > 0)
             {
                 colors[i] = new Color(0.8f, 0.3f, 0.3f, 1.0f);
 
@@ -113,7 +125,6 @@ public class SecondSpaceShip : MonoBehaviour
 
         }
         mesh.colors = colors;
-
 
         if (offset.x > right_planet_x || offset.x < left_planet_x)
         {
@@ -129,8 +140,9 @@ public class SecondSpaceShip : MonoBehaviour
         {
             size = decreaseSize;
         }
-
-
+        
+        //Matrices definition
+        Matrix3x3 TranslateUp = IGB283Transform.Translate(offset + new Vector3(0, speed / 150, 0));
         Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
         Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed / 150, 0, 0));
         Matrix3x3 Scale = IGB283Transform.Scale(size, size);
@@ -138,10 +150,15 @@ public class SecondSpaceShip : MonoBehaviour
         Matrix3x3 Transformation = Translate * RotateShip * Scale * Translate_Back;
         Matrix3x3 NoScaleTransformation = Translate * RotateShip * Translate_Back;
 
+
         // Apply the transformation to all the points in the mesh
         for (int i = 0; i < vertices.Length; i++)
         {
-            if (speed != 0)
+            if (goUp == true && offset.y < shift_up)
+            {
+                vertices[i] = TranslateUp.MultiplyPoint(vertices[i]);
+            }
+            else if (speed != 0)
             {
                 vertices[i] = Transformation.MultiplyPoint(vertices[i]);
             }
@@ -149,6 +166,7 @@ public class SecondSpaceShip : MonoBehaviour
             {
                 vertices[i] = NoScaleTransformation.MultiplyPoint(vertices[i]);
             }
+
         }
 
         // Write the points back to the mesh
@@ -157,21 +175,6 @@ public class SecondSpaceShip : MonoBehaviour
         mesh.RecalculateBounds();
         offset = mesh.bounds.center;
 
-        /*
-        //Change the speed of shape rotation
-        if ((Input.GetKeyDown("k")) && theta < 7.0f)
-        {
-            theta += 0.1f;
-        }
-        else if ((Input.GetKeyDown("l")) && theta > 0f)
-        {
-            theta -= 0.1f;
-            if (theta < 0.1f)
-            {
-                theta = 0f;
-            }
-        }
-        */
 
         //Change speed of spaceship
         if (Input.GetKeyDown("o") && speed >= 1)
@@ -190,6 +193,28 @@ public class SecondSpaceShip : MonoBehaviour
         {
             speed = 0;
         }
+
+
+
+        /*
+       //Change the speed of shape rotation
+       if ((Input.GetKeyDown("k")) && theta < 7.0f)
+       {
+           theta += 0.1f;
+       }
+       else if ((Input.GetKeyDown("l")) && theta > 0f)
+       {
+           theta -= 0.1f;
+           if (theta < 0.1f)
+           {
+               theta = 0f;
+           }
+       }
+       */
+
+
+
+
     }
 
 }
