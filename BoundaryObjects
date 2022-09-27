@@ -1,0 +1,106 @@
+using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
+
+public class BoundaryObjects : MonoBehaviour
+{
+    public Material material;
+    private Vector3 offset;
+    public Vector3 objectStartingPos;
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        // Add a MeshFilter and MeshRenderer to the Empty GameObject
+        gameObject.AddComponent<MeshFilter>();
+        gameObject.AddComponent<MeshRenderer>();
+
+        Mesh mesh = GetComponent<MeshFilter>().mesh;
+
+        GetComponent<MeshRenderer>().material = material;
+
+        mesh.Clear();
+
+        mesh.vertices = new Vector3[]
+        {
+            new Vector3(-8f, 2f, 0),
+            new Vector3(-8f, 4f, 0),
+            new Vector3(-6f, 4f, 0),
+            new Vector3(-6f, 2f, 0),
+
+            new Vector3(6f, 2f, 0),
+            new Vector3(6f, 4f, 0),
+            new Vector3(8f, 4f, 0),
+            new Vector3(8f, 2f, 0),
+
+            new Vector3(-8f, -4f, 0),
+            new Vector3(-8f, -2f, 0),
+            new Vector3(-6f, -2f, 0),
+            new Vector3(-6f, -4f, 0),
+
+            new Vector3(6f, -4f, 0),
+            new Vector3(6f, -2f, 0),
+            new Vector3(8f, -2f, 0),
+            new Vector3(8f, -4f, 0)
+        };
+        
+        offset.x = mesh.bounds.size.x / 2;
+        offset.y = mesh.bounds.size.y / 2;
+
+        // Set the colour of the triangle
+        mesh.colors = new Color[]
+        {
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f),
+            new Color(0.5f, 0.5f, 0.5f, 1f)
+        };
+
+        Vector3[] vertices = mesh.vertices;
+        Color[] colors = new Color[vertices.Length];
+
+        // SEt vertex indices
+        mesh.triangles = new int[] 
+            { 
+            0, 1, 2,
+            0, 2, 3,
+
+            4, 5, 6,
+            4, 6, 7,
+
+            8, 9, 10,
+            8, 10, 11,
+
+            12, 13, 14,
+            12, 14, 15
+            };             
+
+        // Write the points back to the mesh
+        mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
+        offset = mesh.bounds.center;
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        
+    }
+}
