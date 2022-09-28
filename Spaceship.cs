@@ -3,9 +3,6 @@ using System.Collections;
 
 public class Spaceship : MonoBehaviour
 {
-    /// <summary>
-    /// This class is used to detail the spaceship game object
-    /// </summary>
 
     Mesh mesh;
 
@@ -25,13 +22,11 @@ public class Spaceship : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        //size = increaseSize;
-        // Add a MeshFilter and MeshRenderer to the Empty GameObject
+        Vector3 StartingPos = new Vector3(0f, -3f, 0);
+    
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
-
        
-        // CLear all vertex and index data from the mesh
         mesh.Clear();
 
         // Create a triangles with points
@@ -67,7 +62,6 @@ public class Spaceship : MonoBehaviour
         // This section sets the colour of the spaceships vertices
         Vector3[] vertices = mesh.vertices;
         
-
         // Set vertex indices
         mesh.triangles = new int[]
         {
@@ -90,6 +84,19 @@ public class Spaceship : MonoBehaviour
         // Calculate the bounds of the shape
         offset.x = mesh.bounds.size.x / 2;
         offset.y = mesh.bounds.size.y / 2;
+
+        Matrix3x3 TopShipTranslate = IGB283Transform.Translate(StartingPos);
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            vertices[i] = TopShipTranslate.MultiplyPoint(vertices[i]);
+        }
+
+        // Write the points back to the mesh
+        mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
+        offset = mesh.bounds.center;
     }
 
     // Update is called once per frame
@@ -156,22 +163,6 @@ public class Spaceship : MonoBehaviour
 
         mesh.RecalculateBounds();
         offset = mesh.bounds.center;
-
-        /*
-        //Change the speed of shape rotation
-        if ((Input.GetKeyDown("k")) && theta < 7.0f)
-        {
-            theta += 0.1f;
-        }
-        else if ((Input.GetKeyDown("l")) && theta > 0f)
-        {
-            theta -= 0.1f;
-            if (theta < 0.1f)
-            {
-                theta = 0f;
-            }
-        }
-        */
 
         //Change speed of spaceship
         if (Input.GetKeyDown("k") && speed >= 1) 
