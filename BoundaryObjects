@@ -4,90 +4,73 @@ using System.Collections.Generic;
 
 public class BoundaryObjects : MonoBehaviour
 {
+    Mesh mesh;
     public Material material;
     private Vector3 offset;
-    public Vector3 objectStartingPos;
 
     // Start is called before the first frame update
     void Start()
     {
-        // Add a MeshFilter and MeshRenderer to the Empty GameObject
-        gameObject.AddComponent<MeshFilter>();
-        gameObject.AddComponent<MeshRenderer>();
+        Vector3 TopleftStartingPos = new Vector3(-7f, 3f, 0);
+        Vector3 TopRightStartingPos = new Vector3(7f, 3f, 0);
+        Vector3 BottomLeftStartingPos = new Vector3(-7f, -3f, 0);
+        Vector3 BottomRightStartingPos = new Vector3(7f, -3f, 0);
 
-        Mesh mesh = GetComponent<MeshFilter>().mesh;
-
-        GetComponent<MeshRenderer>().material = material;
-
+        mesh = gameObject.AddComponent<MeshFilter>().mesh;
+        gameObject.AddComponent<MeshRenderer>().material = material;
+       
         mesh.Clear();
 
         mesh.vertices = new Vector3[]
         {
-            new Vector3(-8f, 2f, 0),
-            new Vector3(-8f, 4f, 0),
-            new Vector3(-6f, 4f, 0),
-            new Vector3(-6f, 2f, 0),
+            new Vector3 (-1f, -1f, 0f),
+            new Vector3 (-1f, 1f, 0f),
+            new Vector3 (1f, 1f, 0f),
+            new Vector3 (1f, -1f, 0f),
 
-            new Vector3(6f, 2f, 0),
-            new Vector3(6f, 4f, 0),
-            new Vector3(8f, 4f, 0),
-            new Vector3(8f, 2f, 0),
+            new Vector3 (-1f, -1f, 0f),
+            new Vector3 (-1f, 1f, 0f),
+            new Vector3 (1f, 1f, 0f),
+            new Vector3 (1f, -1f, 0f),
 
-            new Vector3(-8f, -4f, 0),
-            new Vector3(-8f, -2f, 0),
-            new Vector3(-6f, -2f, 0),
-            new Vector3(-6f, -4f, 0),
+            new Vector3 (-1f, -1f, 0f),
+            new Vector3 (-1f, 1f, 0f),
+            new Vector3 (1f, 1f, 0f),
+            new Vector3 (1f, -1f, 0f),
 
-            new Vector3(6f, -4f, 0),
-            new Vector3(6f, -2f, 0),
-            new Vector3(8f, -2f, 0),
-            new Vector3(8f, -4f, 0)
+            new Vector3 (-1f, -1f, 0f),
+            new Vector3 (-1f, 1f, 0f),
+            new Vector3 (1f, 1f, 0f),
+            new Vector3 (1f, -1f, 0f)
         };
         
         offset.x = mesh.bounds.size.x / 2;
         offset.y = mesh.bounds.size.y / 2;
 
-        // Set the colour of the triangle
-        mesh.colors = new Color[]
-        {
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f),
-            new Color(0.5f, 0.5f, 0.5f, 1f)
-        };
-
         Vector3[] vertices = mesh.vertices;
         Color[] colors = new Color[vertices.Length];
+        // Set the colour of the triangle
+        for (int i = 0; i < vertices.Length; i++) 
+        {
+            colors[i] = new Color(0.5f, 0.5f, 0.5f, 1f);
+        }
+
+        mesh.colors = colors;        
 
         // SEt vertex indices
         mesh.triangles = new int[] 
             { 
             0, 1, 2,
-            0, 2, 3,
+            0, 2, 3, // top left
 
             4, 5, 6,
-            4, 6, 7,
+            4, 6, 7, // top right
 
             8, 9, 10,
-            8, 10, 11,
+            8, 10, 11, // bottom left
 
-            12, 13, 14,
-            12, 14, 15
+            12, 13, 14, 
+            12, 14, 15 // bottom right
             };             
 
         // Write the points back to the mesh
@@ -96,6 +79,36 @@ public class BoundaryObjects : MonoBehaviour
         mesh.RecalculateBounds();
         offset = mesh.bounds.center;
 
+        Matrix3x3 TopLeftTranslate = IGB283Transform.Translate(offset + TopleftStartingPos);
+        Matrix3x3 TopRightTranslate = IGB283Transform.Translate(offset + TopRightStartingPos); // top right
+        Matrix3x3 BottomLeftTranslate = IGB283Transform.Translate(offset + BottomLeftStartingPos); // top left
+        Matrix3x3 BottomRightTranslate = IGB283Transform.Translate(offset + BottomRightStartingPos); // top left
+
+        for (int i = 0; i < vertices.Length; i++)
+        {
+            if (i < 4)
+            {
+                vertices[i] = TopLeftTranslate.MultiplyPoint(vertices[i]);
+            }
+            else if (i > 3 && i < 8)
+            {
+                vertices[i] = TopRightTranslate.MultiplyPoint(vertices[i]);
+            }
+            else if (i > 7 && i < 12)
+            {
+                vertices[i] = BottomLeftTranslate.MultiplyPoint(vertices[i]);
+            }
+            else if (i > 11 && i < 16)
+            {
+                vertices[i] = BottomRightTranslate.MultiplyPoint(vertices[i]);
+            }
+        }       
+
+        // Write the points back to the mesh
+        mesh.vertices = vertices;
+
+        mesh.RecalculateBounds();
+        offset = mesh.bounds.center;
     }
 
     // Update is called once per frame
