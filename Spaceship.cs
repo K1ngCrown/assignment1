@@ -11,7 +11,7 @@ public class Spaceship : MonoBehaviour
 
     public Material material;
     public float theta = 1f;
-    public float speed = 0f;
+    public float speed = 1f;
 
     private float right_planet_x = 7f;
     private float left_planet_x = -7f;
@@ -21,7 +21,7 @@ public class Spaceship : MonoBehaviour
     public float size;
     public float increaseSize = 1.0004f;
     public float decreaseSize = 0.9996f;
-   
+
     // Start is called before the first frame update
     void Start()
     {
@@ -30,7 +30,7 @@ public class Spaceship : MonoBehaviour
         mesh = gameObject.AddComponent<MeshFilter>().mesh;
         gameObject.AddComponent<MeshRenderer>().material = material;
 
-       
+
         // CLear all vertex and index data from the mesh
         mesh.Clear();
 
@@ -66,7 +66,7 @@ public class Spaceship : MonoBehaviour
 
         // This section sets the colour of the spaceships vertices
         Vector3[] vertices = mesh.vertices;
-        
+
 
         // Set vertex indices
         mesh.triangles = new int[]
@@ -86,7 +86,7 @@ public class Spaceship : MonoBehaviour
             20, 21, 22, // M             
             19, 22, 23 // N
         };
-        
+
         // Calculate the bounds of the shape
         offset.x = mesh.bounds.size.x / 2;
         offset.y = mesh.bounds.size.y / 2;
@@ -113,7 +113,7 @@ public class Spaceship : MonoBehaviour
 
         }
         mesh.colors = colors;
-        
+
 
         if (offset.x > right_planet_x || offset.x < left_planet_x)
         {
@@ -129,7 +129,7 @@ public class Spaceship : MonoBehaviour
         {
             size = decreaseSize;
         }
-        
+
 
         Matrix3x3 RotateShip = IGB283Transform.Rotate(theta * Time.deltaTime * 3f);
         Matrix3x3 Translate = IGB283Transform.Translate(offset + new Vector3(speed / 150, 0, 0));
@@ -174,7 +174,7 @@ public class Spaceship : MonoBehaviour
         */
 
         //Change speed of spaceship
-        if (Input.GetKeyDown("k") && speed >= 1) 
+        if (Input.GetKeyDown("k") && speed >= 1)
         {
             speed += 1f;
         }
@@ -182,7 +182,7 @@ public class Spaceship : MonoBehaviour
         {
             speed += 1f;
         }
-        else if (Input.GetKeyDown("l") && speed > 1) 
+        else if (Input.GetKeyDown("l") && speed > 1)
         {
             speed -= 1f;
         }
